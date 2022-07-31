@@ -1,0 +1,20 @@
+#define function rev() nonpayable returns()
+
+#define macro REV() = takes(0) returns(0) {
+    0x00 0x00
+    revert
+}
+
+#define macro MAIN() = takes(0) returns(0) {
+    0x00 calldataload
+    0xE0 shr
+
+    dup1 __FUNC_SIG(rev) eq rev jumpi
+
+    rev:
+        REV()
+
+    0x00 0x00 
+    revert
+        
+} 

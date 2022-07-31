@@ -1,0 +1,38 @@
+#define macro MAIN() = takes(0) returns(0) {
+    0xcc80f6f3      // [selector]
+    0x00 mstore     // []
+
+    0x04            // [0x04]
+    calldataload    // [calldata]
+    0x20            // [0x20, calldata]
+    mstore          // []
+
+    
+    0x20            // [0x20]
+    0x00            // [0x00, 0x20]
+    0x04            // [0x04, 0x00, 0x20]
+    0x00            // [0x00, 0x04, 0x00, 0x20]
+    0x00            // [0x00, 0x00, 0x04, 0x00, 0x20]
+    0x20 mload      // [addr, 0x00, 0x00, 0x04, 0x00, 0x20]
+    gas             // [gas, addr, 0x00, 0x00, 0x04, 0x00, 0x20]
+    call            // []
+    
+    returndatasize  // [returndatasize]
+    dup1            // [returndatasize, returndatasize]
+    0x01            // [0x01, returndatasize, returndatasize]
+    swap1           // [returndatasize, 0x01, returndatasize]
+    gt              // [returndatasize > 0x01, returndatasize]
+    success         // [success, returndatasize]
+    jumpi           // [returndatasize]
+
+    0x00 0x00
+    revert
+
+    success: 
+        0x00            // [0x00, returndatasize]
+        0x80            // [0x80, 0x00, returndatasize]
+        returndatacopy  // []
+
+        0x20 0x80
+        return
+}

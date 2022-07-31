@@ -1,0 +1,52 @@
+#define function callContract() nonpayable returns ()
+
+#define macro CALL_CONTRACT() = takes(0) returns(0) {
+    0x4d47524e      // [selector]
+    0x00 mstore     // []
+
+    0x04            // [0x04]
+    calldataload    // [calldata]
+    0x20            // [0x20, calldata]
+    mstore          // []
+
+    
+    0x00            // [0x00]
+    0x00            // [0x00, 0x00]
+    0x04            // [0x04, 0x00, 0x00]
+    0x00            // [0x00, 0x04, 0x00, 0x00]
+    0x00            // [0x00, 0x00, 0x04, 0x00, 0x00]
+    0x20 mload      // [addr, 0x00, 0x00, 0x04, 0x00, 0x00]
+    gas             // [gas, addr, 0x00, 0x00, 0x04, 0x00, 0x00]
+    call            // []
+    
+    returndatasize  // [returndatasize]
+    dup1            // [returndatasize, returndatasize]
+    0x00            // [0x01, returndatasize, returndatasize]
+    swap1           // [returndatasize, 0x00, returndatasize]
+    gt              // [returndatasize > 0x00, returndatasize]
+    success         // [success, returndatasize]
+    jumpi           // [returndatasize]
+
+    0x00 0x00
+    revert
+
+    success: 
+        0x00            // [0x00, returndatasize]
+        0x80            // [0x80, 0x00, returndatasize]
+        returndatacopy  // []
+
+        0x20 0x80
+        return
+}
+
+#define macro MAIN() = takes(0) returns(0) {
+    0x00 calldataload 0xE0 shr
+
+    dup1 0x0f24df3a eq callContract jumpi
+
+    callContract: 
+        CALL_CONTRACT()
+
+    0x00 0x00 
+    revert
+}

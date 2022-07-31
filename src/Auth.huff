@@ -1,0 +1,38 @@
+#define function show() nonpayable 
+
+#define macro SHOW() = takes(0) returns(0) {
+
+    0x42312971          // [selector]
+    0x00 mstore         // []
+
+
+    0x20                // [0x20]
+    0x00                // [0x00, 0x20] 
+    0x04                // [0x00, 0x00, 0x20]
+    0x00 mload          // [selector, 0x04, 0x00, 0x20]
+    0x00                // [0x00, selector, 0x04, 0x00, 0x20]
+    0x04 calldataload   // [addr, 0x00, selector, 0x04, 0x00, 0x20]
+    gas                 // [gas(), addr, 0x00, selector, 0x04, 0x00, 0x20]
+    call                // []
+
+    returndatasize  // [returndatasize]
+    0x80            // [0x00, returndatasize];
+    0x00            // [0x00, 0x00, returndatasize]
+    returndatacopy  // []
+
+    0x20 0x80       // [0x20, 0x00]
+    return          
+}
+
+
+
+#define macro MAIN() = takes(0) returns(0) {
+    0x00 calldataload 0xE0 shr
+
+    dup1 __FUNC_SIG(show) eq show jumpi
+
+    show:
+        SHOW()
+
+    0x00 0x00 revert
+}
